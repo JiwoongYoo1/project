@@ -31,10 +31,10 @@ router.delete("/board/:num", async(req, res) =>{
 	const { num } = req.params;	
 	const { password } = req.body;
 
-	const existBoard = await Board.find({num: Number(num)});
-	const existPassword = await Board.find({password: password});
+	
+	const existBoard = await Board.find({num: Number(num), password: password});
 
-	if(existBoard.length && password === existPassword){
+	if(existBoard.length){
 		await Board.deleteOne({ num: Number(num)});
 	}else{
 		return res.status(400).json({
@@ -52,10 +52,9 @@ router.put("/board/:num", async (req, res)=>{
 	const { content } = req.body;
 	const { password } = req.body;
 
-	const existBoard = await Board.find({num: Number(num)});
-	const existPassword = await Board.find({password: password});
+	const existBoard = await Board.find({num: Number(num), password: password});	
 
-	if(existBoard.length && password === existPassword){
+	if(existBoard.length){
 		await Board.updateOne({num: Number(num)}, { $set: {title, content }}) 	
 	}else{
 		return res.status(400).json({

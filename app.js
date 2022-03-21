@@ -12,16 +12,27 @@ const requestMiddleWare = (req, res, next) => {
     next();
 };
 
+app.use(express.static("static"));
 app.use(express.json());
 app.use(express.urlencoded());
 app.use(requestMiddleWare);
 
 app.use("/api", [boardsRouter]);
 
+
 app.get('/', (req, res) => {
-  res.send('Hello World!');
+  res.sendFile(__dirname + '/static/board.html')
+}); 
+
+app.get('/write', (req, res) => {
+  res.sendFile(__dirname + '/static/write.html')
+});
+
+app.get('/board', (req, res) => {
+  res.sendFile(__dirname + '/static/view.html')
 });
 
 app.listen(port, () => {
   console.log(port, '포트로 서버가 열렸어요!');
 });
+

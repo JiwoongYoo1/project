@@ -2,7 +2,6 @@ const express = require('express');
 const Board = require('../schemas/board')
 const router = express.Router();
 
-
 router.get('/', (req, res) => {
 	res.send('this is root page');
 });
@@ -18,6 +17,7 @@ router.get('/board', async (req, res) => {
 
 router.get("/board/:num", async (req, res) => {
 	const { num } = req.params;
+	console.log(num)
 
 	const [board] = await Board.find({ num: Number(num) });
 
@@ -63,14 +63,25 @@ router.put("/board/:num", async (req, res)=>{
 	}
 	
 	 res.json({success: true})
-});
+})
+
+
 
 router.post("/board", async (req, res) => {
-	const { title, name, password, content, num, date} = req.body;	
+	var today = new Date();
+	var date = today.toLocaleString()		
+	
+	const { title, name, password, content } = req.body;	
+	console.log({ title, name, password, content })
+
+	let num = 1
+	const Post_ls = await Board.find();
+	console.log(Post_ls)
+	num = Post_ls[Post_ls.length-1]['num'] + 1
 
 	const createdBoard = await Board.create({ title, name, password, content, num, date });
 
-	res.json({ board: createdBoard });
+	res.json({ board : "등록 완료!!" });
 });
 
 module.exports = router;

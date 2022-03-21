@@ -74,10 +74,10 @@ router.post("/board", async (req, res) => {
 	const { title, name, password, content } = req.body;	
 	console.log({ title, name, password, content })
 
-	let num = 1
-	const Post_ls = await Board.find();
-	console.log(Post_ls)
-	num = Post_ls[Post_ls.length-1]['num'] + 1
+	var num = 0
+	const Post_ls = await Board.find();	
+	num = Post_ls.length + 1
+	
 
 	const createdBoard = await Board.create({ title, name, password, content, num, date });
 

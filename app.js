@@ -15,7 +15,7 @@ const requestMiddleWare = (req, res, next) => {
 app.use(express.static("static"));
 app.use(express.json());
 app.use(express.urlencoded());
-app.use(requestMiddleWare);
+app.use(requestMiddleWare); 
 
 app.use("/api", [boardsRouter]);
 
@@ -30,6 +30,10 @@ app.get('/write', (req, res) => {
 
 app.get('/board', (req, res) => {
   res.sendFile(__dirname + '/static/view.html')
+});
+
+app.get('/board/edit', (req, res) => {
+  res.sendFile(__dirname + '/static/edit.html')
 });
 
 app.listen(port, () => {

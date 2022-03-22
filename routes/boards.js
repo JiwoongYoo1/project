@@ -75,14 +75,17 @@ router.post("/board", async (req, res) => {
 	const { title, name, password, content } = req.body;	
 	
 	var num = 0
-	const Post_ls = await Board.find();	
-	console.log(Post_ls)
+	const Post_ls = await Board.find();		
 	if(Post_ls.length){
 		num = Post_ls[Post_ls.length-1]['num'] + 1
 	}else{
 		num = 1
 	}
-	
+	if( !title || !name || !password || !content ){
+		return res.status(400).json({
+			errorMessage: "빈칸 없이 모두 입력해주세요"	
+		});	
+	}	
 	const createdBoard = await Board.create({ title, name, password, content, num, date });
 	
 	res.json({ board : "등록 완료!!" });

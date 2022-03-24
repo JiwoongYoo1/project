@@ -22,7 +22,7 @@ router.get("/board/:num", async (req, res) => {
 	const [board] = await Board.find({ num: Number(num) });
 
 	res.json({
-		board,  //goods: detail 같은의미
+		board,  
 	});
 });
 

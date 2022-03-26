@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <title>항해블로그</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<script>
+     $(document).ready(function () {  
+        if(localStorage.getItem("token")){                  
+            alert("이미 로그인이 되어있습니다.")
+            window.location.href='/'
+         }                    
+        });
+
+    function signEvent() {
+        const nickname = $('#nickname').val();
+        const password = $('#password').val();
+        const confirm = $('#confirm').val();
+        console.log(nickname)
+
+        // if (password !== confirm) {
+        //     alert("패스워드가 일치하지 않습니다.");
+        //     console.log("패스워드가 일치하지 않습니다.");
+        //     return;
+        // }
+
+        $.ajax({
+            type: "POST",
+            url: "/api/sign",
+            data: {nickname, password, confirm},
+            success: function (response) {
+                alert(response["msg"]) 
+                location.href = "/login"
+            },
+            error: function (error) {
+                alert(error.responseJSON.errorMessage);
+            },
+        });
+
+    }
+
+</script>
+
+
+<body>
+    <div>
+        <div class="board_title">
+            <strong onclick="window.location.href = '/'">항해블로그</strong>
+        </div>
+        <div class="card-body">
+            <div class="form-group" style="margin-top: 50px;">
+                <label for="nickname" style="font-size:20px">닉네임</label><p>닉네임은 최소 3자 이상, 알파벳 대소문자(a~z, A~Z), 숫자(0~9)로 이루어져 있어야 합니다.</p>
+                <input class="form-control" id="nickname" placeholder="Enter Nickname" >
+            </div>
+            <div class="form-group">
+                <label for="password" style="font-size:20px">비밀번호</label><p>비밀번호는 최소 4자 이상이며, 닉네임과 같은 값이 포함된 경우 회원가입에 실패합니다.</p>
+                <input type="password" class="form-control" id="password" placeholder="Password">
+            </div>
+    
+            <div class="form-group">
+                <label for="confirm" style="font-size:20px">비밀번호확인</label><p></p>
+                <input type="password" class="form-control" id="confirm" placeholder="Confirm">
+            </div>
+    
+            <button class="btn btn-outline-primary" onclick="signEvent()" style="width: 70px; height: 36px;">회원가입</button>
+        </div>
+    </div>      
+</body>
+</html>

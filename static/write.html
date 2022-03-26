@@ -8,6 +8,12 @@
     <link rel="stylesheet" href="/style.css">
 
     <script>
+          
+        if(!localStorage.getItem("token")){                  
+            alert("로그인이 필요합니다.")
+            window.location.href='/login'
+         }                    
+        
         function posting(){
             let title_give = $('#title').val();
             let name_give = $('#name').val();
@@ -18,6 +24,9 @@
              $.ajax({
                  type: "POST",
                  url: "/api/board",
+                 headers: {
+                    authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
                  contentType: "application/json",
                  data: JSON.stringify({
                     title : title_give,

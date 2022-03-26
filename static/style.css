@@ -16,6 +16,27 @@ a {
     color: inherit;
 }
 
+.loginbtn{
+    float: right;
+    width: 100px;
+    height: 50px;
+   
+}
+
+.signbtn{
+    float: right;
+    width: 100px;
+    height: 50px;
+    margin-right: 10px;
+}
+
+.logoutbtn{
+    float: right;
+    width: 100px;
+    height: 50px;
+   
+}
+
 .board_wrap {
     width: 1000px;
     margin: 100px auto;
@@ -36,6 +57,7 @@ a {
 
 .bt_wrap {
     margin-top: 30px;
+    margin-bottom: 30px;
     text-align: center;
     font-size: 0;
 }
@@ -52,6 +74,12 @@ a {
 
 .bt_wrap a:first-child {
     margin-left: 0;
+}
+
+.table{
+    width: 100%;
+    font-size: 20px;
+    margin-top: 20px;
 }
 
 .bt_wrap a.on {
@@ -214,6 +242,29 @@ a {
     font-size: 1.4rem;
 }
 
+.board_comment{
+    width: 100%;
+    
+}
+.board_comment .label{
+    font-size: 15px;
+    margin-right: 10px;
+    
+}
+.board_comment .input{
+    height: 50px;
+    width: 80%
+   
+}
+.board_comment .comment_btn{
+    height: 30px;
+    width: 10%   
+}
+.table{
+    border-collapse: separate;
+    border-spacing: 0 30px;
+}
+
 .board_write {
     border-top: 2px solid #000;
 }
@@ -281,6 +332,19 @@ a {
     border: 0;
     resize: vertical;
 }
+
+.card-body{
+    width: 300px; 
+    margin: auto;
+}
+
+.form-group{
+    margin-bottom: 20px;    
+}
+.form-control{
+    height: 30px;
+}
+
 
 @media (max-width: 1000px) {
     .board_wrap {
@@ -362,4 +426,5 @@ a {
     .board_write .info_ input[type="password"] {
         width: 100%;
     }
+   
 }

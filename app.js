@@ -1,5 +1,7 @@
 const express = require('express');
 const connect = require('./schemas');
+const jwt = require("jsonwebtoken");
+const authMiddleware = require("./middlewares/auth-middleware");
 const app = express();
 const port = 3000;
 
@@ -22,6 +24,14 @@ app.use("/api", [boardsRouter]);
 
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/static/board.html')
+}); 
+
+app.get('/login', (req, res) => {
+  res.sendFile(__dirname + '/static/login.html')
+}); 
+
+app.get('/sign', (req, res) => {
+  res.sendFile(__dirname + '/static/sign.html')
 }); 
 
 app.get('/write', (req, res) => {

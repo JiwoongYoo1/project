@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
     <title>항해블로그</title>
     <link rel="stylesheet" href="/style.css">
 
@@ -15,8 +17,13 @@
          console.log(urlParams)
          const num = urlParams.get("num");
          console.log(num)
+
+       
          
         $(document).ready(function () {  
+            if(!localStorage.getItem("token")){
+               
+            }  
             view_board();
         });
         function view_board() {
@@ -32,8 +39,11 @@
                     let title = rows['title']
                     let num  = rows['num']
                     let name = rows['name']
-                    let date = rows['date'].substring(0,11)  
-                    let content = rows['content']                    
+                    let date = rows['date'].substring(0,11)     
+                    let content = rows['content']              
+                    let comment = rows['comment']   
+                    console.log(title)   
+                    console.log(comment)
 
                         let temp_html =`<div class="title">
                                             ${title}
@@ -56,10 +66,51 @@
                                          ${content}
                                         </div>`                                                                                                                                      
                     $('#board_view').append(temp_html)
+                    
+                    let temp_html2= ``   
+                    for(i=0; i<comment.length; i++){
+                        temp_html2 += `<tr id="commentBody100" class=comment_body>
+                                            <td scope="col">${comment[i].nickname}</td>
+                                            <td scope="col" id="comment100">${comment[i].comment}
+                                            </td>
+                                            <td id="commentIcon100">
+                                                <button>수정</button>
+                                                <button>삭제</button>
+                                            </td>   
+                                            </tr>`              
+                                              
                     }
-                
+                        
+
+                    $('#comment_view_tbody').append(temp_html2)    
+                    }                
             });
-        }         
+        }       
+        
+        function comment(){
+            let comment_give = $('#comment').val();    
+            console.log(comment_give)                
+            
+            console.log(comment_give)
+             $.ajax({
+                 type: "POST",
+                 url: `/api/board/${num}`,
+                 headers: {
+                    authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+                 contentType: "application/json",
+                 data: JSON.stringify({
+                    comment : comment_give                   
+                 }),                 
+                 success: function (response) {
+                     alert(response["success"])                  
+                     window.location.reload()
+                 },
+                 error:function(request,status,error){
+                        alert(request.responseText)
+                    }           
+            });
+         }
 
         function move(){
             window.location.href = `edit/?num=${num}`
@@ -73,11 +124,27 @@
         </div>
         <div class="board_view_wrap">
             <div id="board_view" class="board_view">                
+                
             </div>
             <div class="bt_wrap">
                 <a href="/" class="on">목록</a>
-                <a href='#' onclick="move()">수정</a>          
+                <a href='#' id="btn_edit"  onclick="move()">수정</a>          
             </div>
+            <div class="board_comment">
+                <label for="comment" class="label">Comment</label>
+                <input type="text" id="comment" class="input" placeholder="댓글 입력">
+                <button class="comment_btn" onclick="comment()">등록</button>
+            </div>          
+            <table class="table" id="comment_view">
+                <thead class="thead-light">
+                </thead><colgroup>
+                    <col style="width:10%">
+                    <col style="width:80%">
+                    <col style="width:10%">
+                </colgroup>     
+                <tbody id="comment_view_tbody" >
+                </tbody>                
+            </table>
         </div>
     </div>
 </body>

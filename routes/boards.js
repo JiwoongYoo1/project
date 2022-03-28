@@ -217,25 +217,17 @@ router.post("/board/:num",authMiddleware, async (req, res)=>{
 })
 
 router.delete("/comment_delete/:num",authMiddleware, async (req, res)=>{
-	const { num } = req.params;		
-	const { comment } = req.body;
-	const { nickname } = req.body;
+	const { num } = req.params;			
 	const { comment_num } = req.body;
 	const {user} = res.locals;
-	// console.log(num)
-	// console.log(user)
-	console.log(comment)
-	console.log(nickname)
+	
 	console.log(comment_num)
 	
 	const existComment = await Board.findOne({num: Number(num)});
-	console.log(existComment)
-
-	
+	console.log(existComment)	
 
 	if(existComment){
-		await Board.findOneAndUpdate({num : Number(num)}, { $pull: { comment : {comment_num : comment_num}}})
-		  
+		await Board.findOneAndUpdate({num : Number(num)}, { $pull: { comment : {comment_num : comment_num}}})		  
 	}
 	else{
 		return res.status(400).json({
@@ -243,10 +235,36 @@ router.delete("/comment_delete/:num",authMiddleware, async (req, res)=>{
 		});	
 	}
 	
-	
-	
-	// const commentPost = await Board.findOneAndUpdate({num : Number(num)}, { $push: { comment : {comment : comment, nickname: user.nickname}}})
 	res.json({success: "삭제가 완료되었습니다!"});
+})
+
+router.patch("/comment_update/:num",authMiddleware, async (req, res)=>{
+	const { num } = req.params;			
+	const { comment_num } = req.body;
+	const { comment } = req.body;
+	const {user} = res.locals;
+	
+	console.log(num)
+	console.log(comment_num)
+	console.log(comment)
+
+	if(!comment){
+		return res.status(400).json({
+			errorMessage: "빈칸 없이 입력해주세요"	
+		});	
+	}	
+	
+	const existComment = await Board.findOne({'num':Number(num)});	
+	if(existComment){
+		await Board.updateOne({'num':Number(num), "comment.comment_num":comment_num},{$set:{"comment.$":{comment: comment,
+		nickname:user.nickname, comment_num:comment_num}}})		  
+	}else{
+		return res.status(400).json({
+			errorMessage: ""			
+		});	
+	}
+	
+	res.json({success: "수정이 완료되었습니다!"});
 })
 
 module.exports = router;

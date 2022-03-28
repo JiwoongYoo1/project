@@ -249,6 +249,7 @@ a {
 .board_comment .label{
     font-size: 15px;
     margin-right: 10px;
+    width: 20%
     
 }
 .board_comment .input{
@@ -257,9 +258,24 @@ a {
    
 }
 .board_comment .comment_btn{
-    height: 30px;
+    height: 40px;
     width: 10%   
 }
+
+.comment_update_input{
+    width : 85%;
+    height: 30px;
+}
+
+.comment_update_btn{    
+    height: 30px;
+    margin-left: 30px;
+}
+.comment_update_cnl{    
+    height: 30px;
+    
+}
+
 .table{
     border-collapse: separate;
     border-spacing: 0 30px;

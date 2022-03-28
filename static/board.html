@@ -18,6 +18,7 @@
          });
  
          function show_board() {
+             
              $.ajax({
                  type: "GET",
                  url: "/api/board",
@@ -30,6 +31,7 @@
                          let name = rows[i]['name']
                          let date = rows[i]['date'].substring(0,11)  
                          let num = rows[i]['num']
+                         
                          console.log(date)
  
                          let temp_html =`<div class="num">${num}</div>

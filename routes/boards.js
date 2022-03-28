@@ -88,9 +88,12 @@ router.put("/board/:num",authMiddleware, async (req, res)=>{
 router.post("/board",authMiddleware, async (req, res) => {	
 	
 	let today = new Date();
-	let date = today.toLocaleString()		
+	let date = today.toLocaleString()	
+	const {user} = res.locals	
 
-	const { title, name, password, content } = req.body;	
+	const { title, password, content } = req.body;	
+	let { name } = req.body
+	name = user.nickname
 	
 	let num = 0
 	const Post_ls = await Board.find();		

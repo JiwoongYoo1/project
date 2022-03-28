@@ -8,11 +8,15 @@
     <link rel="stylesheet" href="/style.css">
 
     <script>
-          
-        if(!localStorage.getItem("token")){                  
+          $(document).ready(function () {  
+            if(!localStorage.getItem("token")){                  
             alert("로그인이 필요합니다.")
             window.location.href='/login'
-         }                    
+         }    
+         $('#writer').hide() 
+        });
+                        
+         
         
         function posting(){
             let title_give = $('#title').val();
@@ -63,9 +67,9 @@
                     </dl>
                 </div>
                 <div class="info_">
-                    <dl>
+                    <dl id="writer">
                         <dt>작성자</dt>
-                        <dd><input type="text" id="name" placeholder="글쓴이 입력"></dd>
+                        <dd><input type="text" id="name" placeholder="글쓴이 입력" ></dd>
                     </dl>
                     <dl>
                         <dt>비밀번호</dt>

@@ -113,7 +113,7 @@ router.post("/board",authMiddleware, async (req, res) => {
 });
 
 router.post("/sign", async (req, res) => {
-	const { nickname, password, confirm } = req.body;		
+	const { nickname, password, confirm } = req.body;	
 
 	const allowedWords = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v",
     "w","x","y","z","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","0","1","2","3","4",
@@ -132,9 +132,9 @@ router.post("/sign", async (req, res) => {
 		  });
 		  return;
 		}
-	if(password.length < 4){
+	if(password.length < 4 || password.includes(nickname) ){
 		res.status(400).send({
-			errorMessage: "비밀번호는 4글자 이상으로 입력해야 합니다. ",
+			errorMessage: "비밀번호가 4글자 미만이거나 비밀번호에 닉네임과 같은 값이 포함되어있습니다.  ",
 			});
 			return;
 		}
@@ -151,7 +151,7 @@ router.post("/sign", async (req, res) => {
 	  if (existsUsers) {
 		// NOTE: 보안을 위해 인증 메세지는 자세히 설명하지 않는것을 원칙으로 한다: https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html#authentication-responses
 		res.status(400).send({
-		  errorMessage: "동일한 닉네임이 이미 사용중입니다.",
+		  errorMessage: "중복된 닉네임입니다.",
 		});
 		return;
 	  }

@@ -18,13 +18,15 @@
          const num = urlParams.get("num");
          console.log(num)
 
-       
+              
          
         $(document).ready(function () {  
             if(!localStorage.getItem("token")){
-               
+                view_board();
+            }else{
+                view_board_token();
             }  
-            view_board();
+            
         });
         function view_board() {
 
@@ -32,9 +34,11 @@
                 type: "GET",
                 url: `/api/board/${num}`,
                 data: {},
-                success: function (response) {
-                    console.log(response)
+                success: function (response) {                   
+                    
                     let rows = response['board']    
+
+                    console.log(rows)
 
                     let title = rows['title']
                     let num  = rows['num']
@@ -67,31 +71,105 @@
                                         </div>`                                                                                                                                      
                     $('#board_view').append(temp_html)
                     
-                    let temp_html2= ``   
-                    for(i=0; i<comment.length; i++){
-                        temp_html2 += `<tr id="commentBody100" class=comment_body>
-                                            <td scope="col">${comment[i].nickname}</td>
+                    
+                    let temp_html2= ``                       
+                    for(let i = comment.length-1; i > -1; i--){                    
+                        temp_html2 += `<tr id="commentBody" class=comment_body>
+                                            <td scope="col" id="commentnick">${comment[i].nickname}</td>
+                                            <td scope="col" id="comment100">${comment[i].comment}
+                                            </td>
+                                            <td id="commentIcon100">                                               
+                                            </td>   
+                                            </tr>`   
+                    }
+                     $('#comment_view_tbody').append(temp_html2)    
+                }                
+            });
+        }             
+        function view_board_token() {
+
+            $.ajax({
+                type: "GET",
+                url: `/api/boardtoken/${num}`,
+                headers: {
+                    authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+                data: {},
+                success: function (response) {    
+                    let tokenObject = response['user']   
+                    
+                                 
+                    let rows = response['board'] 
+                    
+                    let title = rows['title']
+                    let num  = rows['num']
+                    let name = rows['name']
+                    let date = rows['date'].substring(0,11)     
+                    let content = rows['content']              
+                    let comment = rows['comment']   
+                 
+
+                        let temp_html =`<div class="title">
+                                            ${title}
+                                        </div>
+                                        <div class="info">
+                                            <dl>
+                                                <dt>번호</dt>
+                                                <dd>${num}</dd>
+                                            </dl>
+                                            <dl>
+                                                <dt>작성자</dt>
+                                                <dd>${name}</dd>
+                                            </dl>
+                                            <dl>
+                                                <dt>작성일</dt>
+                                                <dd>${date}</dd>
+                                            </dl>                    
+                                        </div>
+                                        <div class="cont">
+                                        ${content}
+                                        </div>`                                                                                                                                      
+                    $('#board_view').append(temp_html)
+                    
+                                     
+                    let temp_html2= ``                       
+                    for(let i = comment.length-1; i > -1; i--){   
+                        if(comment[i].nickname === tokenObject.nickname) {                
+                        temp_html2 += `<tr id="commentBody" class=comment_body>
+                                            <td scope="col" id="commentnick">${comment[i].nickname}</td>
                                             <td scope="col" id="comment100">${comment[i].comment}
                                             </td>
                                             <td id="commentIcon100">
-                                                <button>수정</button>
-                                                <button>삭제</button>
+                                                <button >수정</button>
+                                                <button onclick="delete_comment(${comment[i].comment_num})">삭제</button>
                                             </td>   
-                                            </tr>`              
-                                              
+                                            </tr>` 
+                        }else{
+                            temp_html2 += `<tr id="commentBody" class=comment_body>
+                                            <td scope="col" id="commentnick">${comment[i].nickname}</td>
+                                            <td scope="col" id="comment100">${comment[i].comment}
+                                            </td>
+                                            <td id="commentIcon100">                                                
+                                            </td>   
+                                            </tr>` 
+                        }  
                     }
-                        
-
                     $('#comment_view_tbody').append(temp_html2)    
-                    }                
+                }                
             });
-        }       
+            }  
         
         function comment(){
+           
+            if(!localStorage.getItem("token")){
+            
+               window.location.href='/login'
+            }  
+            
+           
             let comment_give = $('#comment').val();    
             console.log(comment_give)                
-            
-            console.log(comment_give)
+        
              $.ajax({
                  type: "POST",
                  url: `/api/board/${num}`,
@@ -111,6 +189,50 @@
                     }           
             });
          }
+
+        
+
+         function delete_comment(n){  
+       
+            if(!localStorage.getItem("token")){
+               alert("로그인이 필요한 기능입니다.")
+               window.location.href='/login'
+            }                
+            // const table = document.getElementById('commentBody');
+            // console.log(table.rows.length)
+            
+            let comment_num_give = n
+            let comment100_give = $('#comment100').text().trim();
+            let commentnick_give =$('#commentnick').text();
+            console.log(comment_num_give)
+            console.log(comment100_give)
+            console.log(commentnick_give)
+
+            if(confirm("정말로 삭제하시겠습니까?")){
+                $.ajax({
+                 type: "DELETE",
+                 url: `/api/comment_delete/${num}`,
+                 headers: {
+                    authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+                 contentType: "application/json",
+                 data: JSON.stringify({  
+                    comment : comment100_give,
+                    nickname : commentnick_give,  
+                    comment_num : comment_num_give                                    
+                 }),                 
+                 success: function (response) {
+                     alert(response["success"])    
+                     window.location.reload()              
+                    //  window.location.href = '/'
+                 },
+                 error:function(request,status,error){
+                     alert(request.responseText)
+                   }           
+            });
+         }
+		}
+            
 
         function move(){
             window.location.href = `edit/?num=${num}`

@@ -1,8 +1,10 @@
 const mongoose = require("mongoose");
 
 let UserSchema = new mongoose.Schema({
+  comment_num: Number,
   nickname: String, 
   comment: String
+ 
 });
 
 const boardSchema = new mongoose.Schema({

@@ -21,13 +21,27 @@ router.get('/board', async (req, res) => {
 
 router.get("/board/:num", async (req, res) => {
 	const { num } = req.params;	
+	
+	const [board] = await Board.find({ num: Number(num) });
+
+	res.json({
+		board
+	});
+});
+
+router.get("/boardtoken/:num",authMiddleware, async (req, res) => {
+	const { num } = req.params;	
+	const {user} = res.locals;
+	// console.log(user)
 
 	const [board] = await Board.find({ num: Number(num) });
 
 	res.json({
-		board,  
+		board, user  
 	});
 });
+
+
 
 
 router.delete("/board/:num",authMiddleware, async(req, res) =>{
@@ -73,12 +87,12 @@ router.put("/board/:num",authMiddleware, async (req, res)=>{
 
 router.post("/board",authMiddleware, async (req, res) => {	
 	
-	var today = new Date();
-	var date = today.toLocaleString()		
+	let today = new Date();
+	let date = today.toLocaleString()		
 
 	const { title, name, password, content } = req.body;	
 	
-	var num = 0
+	let num = 0
 	const Post_ls = await Board.find();		
 	if(Post_ls.length){
 		num = Post_ls[Post_ls.length-1]['num'] + 1
@@ -175,19 +189,64 @@ router.post("/board/:num",authMiddleware, async (req, res)=>{
 	const { num } = req.params;	
 	const { comment } = req.body;	
 	const {user} = res.locals;
-	console.log(num)
-	console.log(user)
-	// const existBoard = await Board.find({num: Number(num), password: password});	
+	
+	let comment_Num = 0
+	const comment_ls = await Board.find({num: Number(num)});
+	// console.log(comment_ls)	
+	// console.log(comment_ls[0]['comment'][0]['comment_num'])
+	// console.log(comment_ls[0]['comment'].length)	
+	// comment_Num = comment_ls[0]['comment'][comment_ls[0]['comment'].length-1]['comment_num']+1 
+	console.log(comment_Num)	
+	if(comment_ls[0]['comment'].length === 0){
+		comment_Num = 1
+	}else{
+		comment_Num = comment_ls[0]['comment'][comment_ls[0]['comment'].length-1]['comment_num']+1 
+		console.log(comment_Num)		
+	}
 
-	// if(existBoard.length){
-	// 	await Board.updateOne({num: Number(num)}, { $set: {title, content, name }}) 	
-	// }else{
-	// 	return res.status(400).json({
-	// 		errorMessage: "비밀번호가 다릅니다."	
-	// 	});	
-	// }
-	const commentPost = await Board.findOneAndUpdate({num : Number(num)}, { $push: { comment : {comment : comment, nickname: user.nickname}}})
+
+	if(!comment.length){
+		res.status(400).send({
+			errorMessage: "댓글 내용을 입력해주세요",
+		  });
+		return;
+	}
+	
+	const commentPost = await Board.findOneAndUpdate({num : Number(num)}, { $push: { comment : {comment : comment, nickname: user.nickname,comment_num: comment_Num  }}})
 	 res.json({success: "댓글이 등록되었습니다!"})
+})
+
+router.delete("/comment_delete/:num",authMiddleware, async (req, res)=>{
+	const { num } = req.params;		
+	const { comment } = req.body;
+	const { nickname } = req.body;
+	const { comment_num } = req.body;
+	const {user} = res.locals;
+	// console.log(num)
+	// console.log(user)
+	console.log(comment)
+	console.log(nickname)
+	console.log(comment_num)
+	
+	const existComment = await Board.findOne({num: Number(num)});
+	console.log(existComment)
+
+	
+
+	if(existComment){
+		await Board.findOneAndUpdate({num : Number(num)}, { $pull: { comment : {comment_num : comment_num}}})
+		  
+	}
+	else{
+		return res.status(400).json({
+			errorMessage: ""			
+		});	
+	}
+	
+	
+	
+	// const commentPost = await Board.findOneAndUpdate({num : Number(num)}, { $push: { comment : {comment : comment, nickname: user.nickname}}})
+	res.json({success: "삭제가 완료되었습니다!"});
 })
 
 module.exports = router;

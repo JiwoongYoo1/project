@@ -1,9 +1,10 @@
 const mongoose = require("mongoose");
 
-const UserSchema = new mongoose.Schema({
+const UserSchema = new mongoose.Schema({ 
+  comment_num: Number,
   nickname: String,
   password: String,
-  comment: String
+  comment: String  
 });
 UserSchema.virtual("userId").get(function () {
   return this._id.toHexString();

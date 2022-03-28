@@ -15,7 +15,7 @@
          const num = urlParams.get("num");
          console.log(num)
       
-
+        //수정페이지
         $(document).ready(function () {  
             edit_board();
         });
@@ -61,7 +61,7 @@
                 
             });
         }           
-
+        //게시글 수정
         function update_board(){
             let title_give = $('#title').val();
             let name_give = $('#name').val();
@@ -91,7 +91,7 @@
                     }           
             });
          }
-
+         //게시글 삭제
          function delete_board(){      
             
             let password_give = $('#password').val();

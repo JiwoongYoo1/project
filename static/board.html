@@ -16,7 +16,7 @@
             }           
             show_board();
          });
- 
+         //전체목록
          function show_board() {
              
              $.ajax({
@@ -44,7 +44,7 @@
                  }
              });
          } 
-
+         //로그아웃
         function signOut() {
             localStorage.clear();
             window.location.href = "/";

@@ -9,6 +9,7 @@ router.get('/', (req, res) => {
 	res.send('this is root page');
 });
 
+//전체 목록 불러오기 
 router.get('/board', async (req, res) => {
 	const {num} = req.query;	
 	console.log(num)
@@ -19,6 +20,7 @@ router.get('/board', async (req, res) => {
 	});
 });
 
+//상세페이지 불러오기 로그인 안 한 경우
 router.get("/board/:num", async (req, res) => {
 	const { num } = req.params;	
 	
@@ -29,10 +31,10 @@ router.get("/board/:num", async (req, res) => {
 	});
 });
 
+//상세페이지 불러오기 로그인 한 경우
 router.get("/boardtoken/:num",authMiddleware, async (req, res) => {
 	const { num } = req.params;	
-	const {user} = res.locals;
-	// console.log(user)
+	const {user} = res.locals;	
 
 	const [board] = await Board.find({ num: Number(num) });
 
@@ -41,9 +43,7 @@ router.get("/boardtoken/:num",authMiddleware, async (req, res) => {
 	});
 });
 
-
-
-
+//게시글 삭제
 router.delete("/board/:num",authMiddleware, async(req, res) =>{
 	const { num } = req.params;	
 	const { password } = req.body;
@@ -63,6 +63,7 @@ router.delete("/board/:num",authMiddleware, async(req, res) =>{
 	res.json({success: "삭제가 완료되었습니다!"});
 });
 
+//게시글 수정
 router.put("/board/:num",authMiddleware, async (req, res)=>{
 	const { num } = req.params;	
 	const { title } = req.body;
@@ -84,7 +85,7 @@ router.put("/board/:num",authMiddleware, async (req, res)=>{
 })
 
 
-
+//게시글 작성
 router.post("/board",authMiddleware, async (req, res) => {	
 	
 	let today = new Date();
@@ -112,6 +113,8 @@ router.post("/board",authMiddleware, async (req, res) => {
 	res.json({ board : "등록 완료!!" });
 });
 
+
+//회원가입
 router.post("/sign", async (req, res) => {
 	const { nickname, password, confirm } = req.body;	
 
@@ -162,6 +165,8 @@ router.post("/sign", async (req, res) => {
 	res.json({ msg : "가입을 축하드립니다!!" });
 });
 
+
+//로그인
 router.post("/login", async (req, res) => {
 	try {
 	  const { nickname, password } = req.body;	
@@ -188,6 +193,8 @@ router.post("/login", async (req, res) => {
 	}
   });
 
+
+//댓글 등록
 router.post("/board/:num",authMiddleware, async (req, res)=>{
 	const { num } = req.params;	
 	const { comment } = req.body;	
@@ -195,10 +202,7 @@ router.post("/board/:num",authMiddleware, async (req, res)=>{
 	
 	let comment_Num = 0
 	const comment_ls = await Board.find({num: Number(num)});
-	// console.log(comment_ls)	
-	// console.log(comment_ls[0]['comment'][0]['comment_num'])
-	// console.log(comment_ls[0]['comment'].length)	
-	// comment_Num = comment_ls[0]['comment'][comment_ls[0]['comment'].length-1]['comment_num']+1 
+	
 	console.log(comment_Num)	
 	if(comment_ls[0]['comment'].length === 0){
 		comment_Num = 1
@@ -219,6 +223,7 @@ router.post("/board/:num",authMiddleware, async (req, res)=>{
 	 res.json({success: "댓글이 등록되었습니다!"})
 })
 
+//댓글 삭제
 router.delete("/comment_delete/:num",authMiddleware, async (req, res)=>{
 	const { num } = req.params;			
 	const { comment_num } = req.body;
@@ -241,6 +246,7 @@ router.delete("/comment_delete/:num",authMiddleware, async (req, res)=>{
 	res.json({success: "삭제가 완료되었습니다!"});
 })
 
+//댓글 수정
 router.patch("/comment_update/:num",authMiddleware, async (req, res)=>{
 	const { num } = req.params;			
 	const { comment_num } = req.body;

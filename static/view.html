@@ -27,7 +27,8 @@
                 view_board_token();
             }  
             
-        });
+        }); 
+        //비회원 상세게시글보기
         function view_board() {
 
             $.ajax({
@@ -86,6 +87,7 @@
                 }                
             });
         }             
+        //회원 상세게시글보기
         function view_board_token() {
 
             $.ajax({
@@ -162,8 +164,7 @@
                                             <td id="commentIcon100">                                                
                                             </td>   
                                             </tr>` 
-                        }  
-                        // $('#comment_view_tbody').hide()
+                        }                        
                     }
                   
                     $('#comment_view_tbody').append(temp_html2)    
@@ -171,7 +172,7 @@
                 }                
             });
             }  
-        
+        //댓글 등록
         function comment(){
            
             if(!localStorage.getItem("token")){
@@ -204,7 +205,7 @@
          }
 
         
-
+         //댓글삭제
          function delete_comment(n){  
        
             if(!localStorage.getItem("token")){
@@ -239,7 +240,7 @@
             });
          }
 		}
-
+        
         function update_comment_show(n){
          $(`#comment${n}`).hide()  
          $(`#btn_cmt_update${n}`).hide()  
@@ -247,7 +248,7 @@
          $(`#commentUpdate${n}`).show()  
         }
 
-
+        //댓글 수정
         function update_comment(n){  
        
        if(!localStorage.getItem("token")){

@@ -15,18 +15,12 @@
             window.location.href='/'
          }                    
         });
-
+        //회원가입
     function signEvent() {
         const nickname = $('#nickname').val();
         const password = $('#password').val();
         const confirm = $('#confirm').val();
-        console.log(nickname)
-
-        // if (password !== confirm) {
-        //     alert("패스워드가 일치하지 않습니다.");
-        //     console.log("패스워드가 일치하지 않습니다.");
-        //     return;
-        // }
+        console.log(nickname)       
 
         $.ajax({
             type: "POST",

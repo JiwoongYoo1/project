@@ -30,20 +30,19 @@
                          let title = rows[i]['title']
                          let name = rows[i]['name']
                          let date = rows[i]['date'].substring(0,11)  
-                         let num = rows[i]['num']
+                         let num = rows[i]['num']                   
                          
-                         console.log(date)
- 
                          let temp_html =`<div class="num">${num}</div>
                                          <div class="title"><a href="board/?num=${num}">${title}</a></div>
                                          <div class="name">${name}</div>
-                                         <div class="date">${date}</div>                    
-                                         `                                                                                                  
+                                         <div class="date">${date}</div>   
+                                         `                        
                      $('#content_list').append(temp_html)
                      }
                  }
              });
          } 
+
          //로그아웃
         function signOut() {
             localStorage.clear();

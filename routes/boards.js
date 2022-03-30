@@ -10,11 +10,10 @@ router.get('/', (req, res) => {
 });
 
 //전체 목록 불러오기 
-router.get('/board', async (req, res) => {
-	const {num} = req.query;	
-	console.log(num)
+router.get('/board', async (req, res) => {	
 
-	const board = await Board.find({num});
+	const board = await Board.find({});
+	console.log(board)
 	res.json({
 		board
 	});
@@ -25,7 +24,7 @@ router.get("/board/:num", async (req, res) => {
 	const { num } = req.params;	
 	
 	const [board] = await Board.find({ num: Number(num) });
-
+	console.log(board)
 	res.json({
 		board
 	});
@@ -181,7 +180,7 @@ router.post("/login", async (req, res) => {
 	  }
   
 	  const token = jwt.sign({ userId: user.userId}, "my-secret-key");
-	  console.log(token)
+	//   console.log(token)
 	  res.send({
 		token, msg:"로그인에 성공하셨습니다"
 	  });

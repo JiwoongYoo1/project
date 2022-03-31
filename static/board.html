@@ -25,11 +25,11 @@
                  data: {},
                  success: function (response) {                    
                      let rows = response['board']
-                     console.log(rows)
+                    //  console.log(rows)
                      for (let i = rows.length-1; i > -1; i--) {
                          let title = rows[i]['title']
                          let name = rows[i]['name']
-                         let date = rows[i]['date'].substring(0,11)  
+                         let date = rows[i]['date']
                          let num = rows[i]['num']                   
                          
                          let temp_html =`<div class="num">${num}</div>

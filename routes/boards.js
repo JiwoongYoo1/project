@@ -13,7 +13,7 @@ router.get('/', (req, res) => {
 router.get('/board', async (req, res) => {	
 
 	const board = await Board.find({});
-	console.log(board)
+	
 	res.json({
 		board
 	});
@@ -88,7 +88,8 @@ router.put("/board/:num",authMiddleware, async (req, res)=>{
 router.post("/board",authMiddleware, async (req, res) => {	
 	
 	let today = new Date();
-	let date = today.toLocaleString()	
+	let date = today.toLocaleDateString()
+	console.log(date)
 	const {user} = res.locals	
 
 	const { title, password, content } = req.body;	

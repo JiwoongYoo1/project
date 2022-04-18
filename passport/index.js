@@ -6,8 +6,8 @@ module.exports = () => {
     passport.use(
       new KakaoStrategy(
         {
-          clientID: 'ebb64769e9ae562700e77df6554c840d', // 카카오 로그인에서 발급받은 REST API 키
-          callbackURL: 'http://localhost:3000/auth/kakao/callback' // 카카오 로그인 Redirect URI 경로
+          clientID: '', // 카카오 로그인에서 발급받은 REST API 키
+          callbackURL: '' // 카카오 로그인 Redirect URI 경로
         },
   
         // clientID에 카카오 앱 아이디 추가

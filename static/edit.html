@@ -70,7 +70,7 @@
             
             console.log(title_give,name_give,password_give,content_give)
              $.ajax({
-                 type: "PUT",
+                 type: "PATCH",
                  url: `/api/board/${num}`,
                  headers: {
                     authorization: `Bearer ${localStorage.getItem("token")}`,

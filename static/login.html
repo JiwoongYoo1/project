@@ -7,8 +7,14 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <title>항해블로그</title>
     <link rel="stylesheet" href="/style.css">
+    
 </head>
 <script>
+  
+
+
+
+
     $(document).ready(function () {  
             if(localStorage.getItem("token")){                  
                 alert("이미 로그인이 되어있습니다.")
@@ -37,6 +43,57 @@
 
 </script>
 <body>
+    <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
+    <script>
+         window.Kakao.init("62a8b0af57cfa25ef07a7e8a7f540749");
+         console.log(Kakao.isInitialized());
+         function kakaoLogin() {
+            Kakao.Auth.login({
+                scope:'profile_nickname, account_email',
+            success: function (authObj) {
+                console.log(authObj)               
+                Kakao.API.request({
+                url: '/v2/user/me',
+                success: function (res) {
+                    console.log(res)
+                    const kakao_account = res.kakao_account;
+                    localStorage.setItem("access_token", authObj.access_token)
+                    
+                    
+                },
+                fail: function (error) {
+                    console.log(error)
+                },
+                })
+            },
+            fail: function (error) {
+                console.log(error)
+            },
+            })
+        }
+      
+        //카카오로그아웃  
+        function kakaoLogout() {
+            if (Kakao.Auth.getAccessToken()) {
+            Kakao.API.request({
+                url: '/v1/user/unlink',
+                success: function (response) {
+                    alert("로그아웃")
+                    localStorage.clear();
+                    console.log(response)
+                    
+                },
+                fail: function (error) {
+                console.log(error)
+                },
+            })
+            Kakao.Auth.setAccessToken(undefined)
+            }
+        }  
+            
+    </script>
+    
+    
     <div>       
         <div class="board_title">
             <strong onclick="window.location.href = '/'">항해블로그</strong>
@@ -52,6 +109,18 @@
             </div>
             <button class="btn btn-outline-primary" onclick="loginEvent()" style="width: 70px; height: 36px;" >로그인</button>
             <a href="/sign"> <button class="btn btn-outline-primary" style="width: 70px; height: 36px;" >회원가입</button></a>
+            <ul>
+                <li onclick="kakaoLogin();">
+                  <a href="javascript:void(0)">
+                      <span>카카오 로그인</span>
+                  </a>  
+                </li>
+                <li onclick="kakaoLogout();">
+                  <a href="javascript:void(0)">
+                      <span>카카오 로그아웃</span>
+                  </a>
+                </li>
+            </ul>
         </div>
     </div>   
 </body>

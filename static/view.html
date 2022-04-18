@@ -88,7 +88,7 @@
             });
         }             
         //회원 상세게시글보기
-        function view_board_token() {
+        function view_board_token() {           
 
             $.ajax({
                 type: "GET",
@@ -277,7 +277,7 @@
             success: function (response) {
                 alert(response["success"])    
                 window.location.reload()              
-               //  window.location.href = '/'
+             
             },
             error:function(request,status,error){
                 alert(request.responseText)

@@ -9,14 +9,18 @@
 
     <script>       
         $(document).ready(function () {  
+            console.log(localStorage.getItem("access_token"))
+            console.log(localStorage.getItem("token"))
             if(localStorage.getItem("token")){                                 
                 $('#btn_login').hide()  
+                show_board_token();
             }else{
-                $('#btn_logout').hide()              
+                $('#btn_logout').hide()    
+                show_board();          
             }           
-            show_board();
+           
          });
-         //전체목록
+         //전체목록 비회원
          function show_board() {
              
              $.ajax({
@@ -25,26 +29,257 @@
                  data: {},
                  success: function (response) {                    
                      let rows = response['board']
-                    //  console.log(rows)
+                     
+                     
                      for (let i = rows.length-1; i > -1; i--) {
                          let title = rows[i]['title']
                          let name = rows[i]['name']
                          let date = rows[i]['date']
-                         let num = rows[i]['num']                   
-                         
-                         let temp_html =`<div class="num">${num}</div>
+                         let num = rows[i]['num']  
+                         let like = rows[i]['like']    
+                       
+                            let temp_html =`<div class="num">${num}</div>
                                          <div class="title"><a href="board/?num=${num}">${title}</a></div>
                                          <div class="name">${name}</div>
                                          <div class="date">${date}</div>   
-                                         `                        
-                     $('#content_list').append(temp_html)
-                     }
+                                         <div class="like" id="like">                                          
+                                            <button id="btn_like" onclick="like(${num})">좋아요</button>
+                                            <button id="btn_unlike" onclick="unlike(${num})" style="display:none">좋아요취소</button>
+                                            : ${like}
+                                         </div> 
+                                         `                       
+                           $('#content_list').append(temp_html)              
+                    }
+                
                  }
              });
          } 
 
+         //전체목록 회원
+         function show_board_token() {
+            
+
+
+             $.ajax({
+                 type: "GET",
+                 url: "/api/boardtoken",
+                 headers: {
+                    authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+                 data: {},
+                 success: function (response) {                    
+                     let rows = response['board']
+                     let userRows = response['user']
+                     let likeRows = response['like']
+                    //  console.log(userRows)
+                    //  console.log(likeRows)
+                     
+                     for (let i = rows.length-1; i > -1; i--) {
+                         let title = rows[i]['title']
+                         let name = rows[i]['name']
+                         let date = rows[i]['date']
+                         let num = rows[i]['num']  
+                         let like = rows[i]['like']    
+                         
+                        
+                            let temp_html =`<div class="num">${num}</div>
+                                         <div class="title"><a href="board/?num=${num}">${title}</a></div>
+                                         <div class="name">${name}</div>
+                                         <div class="date">${date}</div>   
+                                         <div class="like" id="like">                                          
+                                            <button id="btn_like${num}" onclick="like(${num})">좋아요</button>
+                                            <button id="btn_unlike${num}" onclick="unlike(${num})" style="display:none">좋아요취소</button>
+                                            : ${like}
+                                         </div> 
+                                         `                       
+                           $('#content_list').append(temp_html)              
+                    }
+                    for(let i=0; i<likeRows.length; i++){
+                      
+                        if(userRows.nickname === likeRows[i].nickname){
+                            $(`#btn_like${likeRows[i]['num']}`).hide()  
+                            $(`#btn_unlike${likeRows[i]['num']}`).show() 
+                        }   
+                    }
+                
+                 }
+             });
+         } 
+
+         //좋아요
+         function like(n) {
+            if(!localStorage.getItem("token")){
+           
+            window.location.href='/login'
+           }   
+            
+            let num_give = n
+            console.log(n)
+
+            $.ajax({
+                 type: "PUT",
+                 url: '/api/boardlike',
+                 headers: {
+                    authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+                 contentType: "application/json",
+                 data: JSON.stringify({
+                    num : num_give                   
+                 }),                 
+                 success: function (response) {
+                    //  alert(response["success"])                  
+                    window.location.reload()
+                    //  console.log(n)
+                    //  $(`#btn_like_${n}`).hide()  
+                    //  $(`#btn_likecnl_${n}`).show()  
+                 },
+                 error:function(request,status,error){
+                        alert(request.responseText)
+                    }           
+            });
+            
+         } 
+
+         //좋아요취소
+         function unlike(n) {
+            if(!localStorage.getItem("token")){
+            alert("로그인이 필요한 기능입니다.")
+            window.location.href='/login'
+           }   
+            
+            let num_give = n
+            console.log(n)
+
+            $.ajax({
+                 type: "DELETE",
+                 url: '/api/boardunlike',
+                 headers: {
+                    authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+                 contentType: "application/json",
+                 data: JSON.stringify({
+                    num : num_give                   
+                 }),                 
+                 success: function (response) {
+                    //  alert(response["success"])                  
+                    window.location.reload()
+                    //  console.log(n)
+                    //  $(`#btn_like_${n}`).show()  
+                    //  $(`#btn_likecnl_${n}`).hide()  
+                 },
+                 error:function(request,status,error){
+                        alert(request.responseText)
+                    }           
+            });
+            
+         }
+
+         function search_board() {
+            if(localStorage.getItem("token")){  
+                search_boardToken();
+            }else{                
+                search_boardNotToken();       
+            }  
+         }
+
+
+         //게시판검색 회원
+         function search_boardToken() {
+           
+            let search = $('#search_input').val();           
+        
+            // console.log(search)
+
+            $.ajax({
+                 type: "GET",
+                 url: `/api/boardsearchtoken/${search}`,
+                 headers: {
+                    authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
+                 contentType: "application/json",
+                 data: {},                 
+                 success: function (response) {
+                    let rows = response['searchBoard']
+                     let userRows = response['user']
+                     console.log(userRows)
+                     let likeRows = response['like']
+                     console.log(rows)
+                     $('#content_list').empty()
+                     
+                     for (let i=0; i<rows.length; i++) {
+                         let title = rows[i]['title']
+                         let name = rows[i]['name']
+                         let date = rows[i]['date']
+                         let num = rows[i]['num']  
+                         let like = rows[i]['like']    
+                         
+                        
+                            let temp_html =`<div class="num">${num}</div>
+                                         <div class="title"><a href="board/?num=${num}">${title}</a></div>
+                                         <div class="name">${name}</div>
+                                         <div class="date">${date}</div>   
+                                         <div class="like" id="like">                                          
+                                            <button id="btn_like${num}" onclick="like(${num})">좋아요</button>
+                                            <button id="btn_unlike${num}" onclick="unlike(${num})" style="display:none">좋아요취소</button>
+                                            : ${like}
+                                         </div> 
+                                         `                       
+                           $('#content_list').append(temp_html)              
+                    }
+                         for(let i=0; i<likeRows.length; i++){
+                      
+                        if(userRows.nickname === likeRows[i].nickname){
+                            $(`#btn_like${likeRows[i]['num']}`).hide()  
+                            $(`#btn_unlike${likeRows[i]['num']}`).show() 
+                        }   
+                    } 
+                }     
+            });
+            
+         }
+
+         //게시판검색 비회원
+         function search_boardNotToken() {
+           
+           let search = $('#search_input').val();
+           
+           $.ajax({
+                type: "GET",
+                url: `/api/boardsearch/${search}`,              
+                contentType: "application/json",
+                data: {},
+                success: function (response) {
+                   let rows = response['searchBoard']  
+                    console.log(rows)
+                    $('#content_list').empty()
+                    
+                    for (let i=0; i<rows.length; i++) {
+                        let title = rows[i]['title']
+                        let name = rows[i]['name']
+                        let date = rows[i]['date']
+                        let num = rows[i]['num']  
+                        let like = rows[i]['like']    
+                       
+                           let temp_html =`<div class="num">${num}</div>
+                                        <div class="title"><a href="board/?num=${num}">${title}</a></div>
+                                        <div class="name">${name}</div>
+                                        <div class="date">${date}</div>   
+                                        <div class="like" id="like">                                          
+                                           <button id="btn_like${num}" onclick="like(${num})">좋아요</button>
+                                           <button id="btn_unlike${num}" onclick="unlike(${num})" style="display:none">좋아요취소</button>
+                                           : ${like}
+                                        </div> 
+                                        `                       
+                          $('#content_list').append(temp_html)              
+                   }
+               }     
+           });
+           
+        }
+
          //로그아웃
         function signOut() {
+            alert("로그아웃 되었습니다.")
             localStorage.clear();
             window.location.href = "/";
             }
@@ -57,8 +292,10 @@
             <strong onclick="window.location.href = '/'">항해블로그   
                 <a href="/login"><button id =btn_login >로그인</button> </a>
                 <button id =btn_logout onclick="signOut()" >로그아웃</button>   
-                <a href="/sign"><button id =btn_sign >회원가입</button> </a>              
+                <a href="/sign"><button id =btn_sign >회원가입</button> </a>                        
             </strong>          
+            <input type="text" id="search_input" class="search_input" placeholder="글쓴이를 검색해보세요">
+            <button id="search_btn" class="search_btn" onclick="search_board()">검색</button>     
         </div>
         <div class="board_list_wrap">
             <div class="board_list">
@@ -66,10 +303,13 @@
                     <div class="num">번호</div>
                     <div class="title">제목</div>
                     <div class="name">글쓴이</div>
-                    <div class="date">작성일</div>                    
+                    <div class="date">작성일</div>    
+                    <div class="like">추천</div>                  
                 </div>
-                <div id="content_list">                            
+                <div id="content_list">     
+                                        
                 </div>
+               
             </div>      
             <div class="bt_wrap">
                 <a href="/write" class="on" id="btn_post">글쓰기  </a>               

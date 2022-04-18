@@ -4,7 +4,14 @@ const UserSchema = new mongoose.Schema({
   comment_num: Number,
   nickname: String,
   password: String,
-  comment: String  
+  comment: String,
+  userID : String,
+  email : String,
+ 
+  provider: {
+    type: String,
+  }
+  
 });
 UserSchema.virtual("userId").get(function () {
   return this._id.toHexString();

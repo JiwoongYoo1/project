@@ -1,9 +1,11 @@
 const express = require('express');
 const Board = require('../schemas/board')
 const User = require('../schemas/user')
+const Like = require('../schemas/like')
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const authMiddleware = require("../middlewares/auth-middleware");
+
 
 router.get('/', (req, res) => {
 	res.send('this is root page');
@@ -19,12 +21,25 @@ router.get('/board', async (req, res) => {
 	});
 });
 
+//전체 목록 불러오기 회원
+router.get('/boardtoken',authMiddleware, async (req, res) => {	
+	const {nickname} = res.locals.user;	
+	const {user} = res.locals;	
+	const board = await Board.find({});
+	const like = await Like.find({});
+	// console.log(like)
+	console.log(nickname)
+	res.json({
+		board, user, like
+	});
+});
+
 //상세페이지 불러오기 로그인 안 한 경우
 router.get("/board/:num", async (req, res) => {
 	const { num } = req.params;	
 	
 	const [board] = await Board.find({ num: Number(num) });
-	console.log(board)
+	// console.log(board)
 	res.json({
 		board
 	});
@@ -57,13 +72,13 @@ router.delete("/board/:num",authMiddleware, async(req, res) =>{
 			errorMessage: "비밀번호가 다릅니다."
 			
 		});	
-	}
+	}	
 
 	res.json({success: "삭제가 완료되었습니다!"});
 });
 
 //게시글 수정
-router.put("/board/:num",authMiddleware, async (req, res)=>{
+router.patch("/board/:num",authMiddleware, async (req, res)=>{
 	const { num } = req.params;	
 	const { title } = req.body;
 	const { content } = req.body;
@@ -89,7 +104,7 @@ router.post("/board",authMiddleware, async (req, res) => {
 	
 	let today = new Date();
 	let date = today.toLocaleDateString()
-	console.log(date)
+	// console.log(date)
 	const {user} = res.locals	
 
 	const { title, password, content } = req.body;	
@@ -172,7 +187,7 @@ router.post("/login", async (req, res) => {
 	  const { nickname, password } = req.body;	
   
 	  const user = await User.findOne({nickname: nickname});
-  
+		
 	  if (!user || password !== user.password) {
 		res.status(400).send({
 		  errorMessage: "닉네임 또는 패스워드를 확인해주세요",
@@ -186,7 +201,7 @@ router.post("/login", async (req, res) => {
 		token, msg:"로그인에 성공하셨습니다"
 	  });
 	} catch (err) {
-		console.log(err);
+		// console.log(err);
 	  res.status(400).send({
 		errorMessage: "요청한 데이터 형식이 올바르지 않습니다.",
 	  });
@@ -203,12 +218,12 @@ router.post("/board/:num",authMiddleware, async (req, res)=>{
 	let comment_Num = 0
 	const comment_ls = await Board.find({num: Number(num)});
 	
-	console.log(comment_Num)	
+	// console.log(comment_Num)	
 	if(comment_ls[0]['comment'].length === 0){
 		comment_Num = 1
 	}else{
 		comment_Num = comment_ls[0]['comment'][comment_ls[0]['comment'].length-1]['comment_num']+1 
-		console.log(comment_Num)		
+		// console.log(comment_Num)		
 	}
 
 
@@ -229,10 +244,10 @@ router.delete("/comment_delete/:num",authMiddleware, async (req, res)=>{
 	const { comment_num } = req.body;
 	const {user} = res.locals;
 	
-	console.log(comment_num)
+	// console.log(comment_num)
 	
 	const existComment = await Board.findOne({num: Number(num)});
-	console.log(existComment)	
+	// console.log(existComment)	
 
 	if(existComment){
 		await Board.findOneAndUpdate({num : Number(num)}, { $pull: { comment : {comment_num : comment_num}}})		  
@@ -253,9 +268,9 @@ router.patch("/comment_update/:num",authMiddleware, async (req, res)=>{
 	const { comment } = req.body;
 	const {user} = res.locals;
 	
-	console.log(num)
-	console.log(comment_num)
-	console.log(comment)
+	// console.log(num)
+	// console.log(comment_num)
+	// console.log(comment)
 
 	if(!comment){
 		return res.status(400).json({
@@ -276,4 +291,112 @@ router.patch("/comment_update/:num",authMiddleware, async (req, res)=>{
 	res.json({success: "수정이 완료되었습니다!"});
 })
 
+//좋아요 등록
+router.put("/boardlike",authMiddleware, async (req, res)=>{
+	const { num } = req.body;	
+	const { user } = res.locals
+
+	const nickname = user.nickname
+	const existBoard = await Board.find({num: Number(num)});
+	// console.log(existBoard)
+	let like = existBoard[0]['like']
+	// console.log(like)
+
+	await Board.updateOne({num: Number(num)}, { $set: {like: like + 1 }}) 	
+	await Like.create({ nickname, num});
+
+	 res.json({success:""})
+})
+
+//좋아요 취소
+router.delete("/boardunlike",authMiddleware, async (req, res)=>{
+	const { num } = req.body;	
+	const { user } = res.locals
+	// console.log(user)
+		
+	const nickname = user.nickname
+	const existBoard = await Board.find({num: Number(num)});
+	// console.log(existBoard)
+	let like = existBoard[0]['like']
+	// console.log(like)
+
+	await Board.updateOne({num: Number(num)}, { $set: {like: like - 1 }}) 	
+	await Like.findOneAndDelete({ nickname:nickname, num: Number(num)},{nickname});
+	
+	res.json({success: ""})
+})
+
+//게시판 검색 회원
+router.get("/boardsearchtoken/:search", authMiddleware, async (req, res)=>{
+	const { search } = req.params;
+	const { user } = res.locals;		
+	const like = await Like.find({});	
+	
+	// console.log(search)
+	// console.log(user)
+	// console.log(like)
+	
+	const searchBoard = await Board.find({name: search});	
+	
+	 res.json({searchBoard,user,like})
+})
+
+//게시판 검색 비회원
+router.get("/boardsearch/:search", async (req, res)=>{
+	const { search } = req.params;	
+	
+	console.log(search)
+	
+	const searchBoard = await Board.find({name: search});	
+	
+	 res.json({searchBoard})
+})
+
+
+
+
 module.exports = router;
+
+
+
+
+
+
+
+//좋아요 등록
+router.put("/boardlike",authMiddleware, async (req, res)=>{
+	const { post_id } = req.body;	
+	const { user } = res.locals
+	console.log(post_id)
+
+	const id = user.id
+	const existBoard = await Write_modify.find({post_id: Number(post_id)});
+	console.log(existBoard)
+	let like = existBoard[0]['like']
+	console.log(like)
+
+	await Write_modify.updateOne({post_id: Number(post_id)}, { $set: {like: like + 1 }}) 	
+	await Like.create({ id, post_id});
+
+	 res.json({success:""})
+})
+
+//좋아요 취소
+router.put("/boardunlike",authMiddleware, async (req, res)=>{
+	const { post_id } = req.body;	
+	const { user } = res.locals
+	console.log(post_id)
+		
+	const id = user.id
+	const existBoard = await Write_modify.find({num: Number(num)});
+	console.log(existBoard)
+	let like = existBoard[0]['like']
+	console.log(like)
+
+	await Write_modify.updateOne({post_id: Number(post_id)}, { $set: {like: like - 1 }}) 	
+	await Like.findOneAndDelete({ id:id, post_id: Number(post_id)},{id});
+	
+	res.json({success: ""})
+})
+
+

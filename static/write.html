@@ -9,7 +9,7 @@
 
     <script>
           $(document).ready(function () {  
-            if(!localStorage.getItem("token")){                  
+            if(!localStorage.getItem("token") && !localStorage.getItem("access_token")){                  
             alert("로그인이 필요합니다.")
             window.location.href='/login'
          }    

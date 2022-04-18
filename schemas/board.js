@@ -4,7 +4,6 @@ let UserSchema = new mongoose.Schema({
   comment_num: Number,
   nickname: String, 
   comment: String
- 
 });
 
 const boardSchema = new mongoose.Schema({
@@ -31,6 +30,11 @@ const boardSchema = new mongoose.Schema({
   num: {
     type: Number,    
     
+  }, 
+  like:{
+    type: Number,
+    default: 0
+  
   },
   comment: [UserSchema]
 });
